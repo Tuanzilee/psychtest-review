@@ -1,7 +1,7 @@
 # CLAUDE.md — psychtest-review
 
 ## Repo 用途
-hai 的「心理測驗」（高玉靜老師，1151）每週複習 PWA（手機為主）。骨架複製自 `exp-methods-review`：單頁 `index.html` ＋ runtime fetch JSON，無 build、無框架。**目前只有本機，尚未建 GitHub repo**；預計 `Tuanzilee/psychtest-review`、Pages `tuanzilee.github.io/psychtest-review`。建 repo 與 push 前一律先問 hai（公開 repo，內容不放講義或課本原文）。`samples/` 試聽檔不進 repo（.gitignore）。
+hai 的「心理測驗」（高玉靜老師，1151）每週複習 PWA（手機為主）。骨架複製自 `exp-methods-review`：單頁 `index.html` ＋ runtime fetch JSON，無 build、無框架。已部署：公開 repo `github.com/Tuanzilee/psychtest-review`，Pages `tuanzilee.github.io/psychtest-review`（main 分支根目錄，2026-10-07 上線，push 後 1–2 分鐘更新）。每次 push 前一律先問 hai（公開 repo，內容不放講義或課本原文）。`samples/` 試聽檔不進 repo（.gitignore）。
 
 ## 檔案結構
 ```
