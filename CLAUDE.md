@@ -9,7 +9,7 @@ index.html     ← 全部 UI 與邏輯（首頁、每週重點、概念卡、情
 concepts.json  ← 概念卡
 quiz.json      ← 情境題（4 選 1，附解析）
 weeks.json     ← 每週重點摘要與待辦
-sw.js / manifest.json / icon-*.png
+sw.js / manifest.json / icon-*.png（圖示是米色底加單一漢字：心理測驗用「測」、實驗法用「驗」；LINE 預覽用 index.html 的 og:image 抓 icon-512.png，換圖示後 LINE 可能要一段時間才更新快取）
 tools/gen_audio.py ← 產生音檔（雲哲男聲 zh-TW-YunJheNeural）：`~/.venvs/tts/bin/python tools/gen_audio.py`
 audio/         ← {概念卡id}.mp3、{題目id}.mp3、W{週}.mp3
 check.py       ← 資料檢查（含音檔齊全）：python3 check.py
@@ -21,7 +21,7 @@ check.py       ← 資料檢查（含音檔齊全）：python3 check.py
 - `quiz.json`：`id`（P_W{週}_Q{兩位數}）、`week`、`q`、`options`（4 個）、`answer`、`why`、`concept`
 - `weeks.json`：`week`、`date`、`title`、`summary`、`points[]`、`todo[]`、`concepts[]`
 - **範圍篩選**：「週次」由 `weeks.json` 自動產生；「主題」由 `concepts.json` 的 `topic` 欄位自動產生（所以 topic 名稱要一致，新增卡片優先沿用既有主題）。目前主題：測驗基本概念、測量理論、測驗與評估、測驗類型與方法、倫理與公平、構念與操作化、智力理論、智力測量、興趣與人格
-- `index.html` 的 `MID_WEEK` 目前設 7，是期中範圍的近似（期中考 11/20，範圍預計到 11/13 試題分析，老師公布後再改）
+- `index.html` 的 `MID_WEEK = 8`（期中範圍到決策效度，見下方「週次編號」）
 
 ## 週次編號
 週次＝學期第幾週，與 Plaud 檔名 W{nn} 一致。W1＝9/18；W2＝9/25 中秋放假週（放 10/1 的補充教材，自學）；W3＝10/2；W4＝10/9 國慶放假；W5＝10/16 量尺轉換與常模；W6＝10/23 信度；W7＝10/30 信度 II 與測量效度；W8＝11/6 決策效度；W9＝11/13 試題分析（第一個作業）；W10＝11/20 期中考。

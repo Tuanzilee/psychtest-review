@@ -1,5 +1,5 @@
 // 每次改 concepts.json / quiz.json / weeks.json / index.html 都要把版本號 +1，手機才會拿到新內容
-const CACHE = 'psychtest-review-v2';
+const CACHE = 'psychtest-review-v3';
 const FILES = ['./', 'index.html', 'concepts.json', 'quiz.json', 'weeks.json', 'manifest.json', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
