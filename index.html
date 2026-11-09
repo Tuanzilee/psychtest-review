@@ -69,6 +69,14 @@ nav.tabs button.on { background: var(--soft); color: var(--ink); font-weight: 60
 .flash .def { font-size: 17px; text-align: left; width: 100%; }
 .flash .hint { color: var(--muted); font-size: 13px; }
 .tag { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 1px 10px; }
+.bars { display: flex; align-items: flex-end; gap: 4px; width: 100%; margin-top: 12px; }
+.bar { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; color: var(--muted); }
+.bar i { width: 100%; background: var(--line); border-radius: 5px 5px 0 0; display: block; }
+.bar b { width: 100%; text-align: center; background: var(--line); color: var(--ink); border-radius: 5px; padding: 3px 0; font-weight: 600; }
+.cmp { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; text-align: left; }
+.cmp th, .cmp td { padding: 7px 6px; border-top: 1px solid var(--line); vertical-align: top; }
+.cmp thead th { border-top: 0; font-weight: 700; }
+.cmp tbody th { color: var(--muted, #8a7a66); font-weight: 600; white-space: nowrap; }
 .example { font-size: 15px; margin-top: 8px; border-top: 1px dashed var(--line); padding-top: 10px; width: 100%; text-align: left; }
 .rate .btn { font-size: 15px; padding: 12px 4px; }
 .rate .bad { background: var(--bad); color: #fff; } .rate .mid { background: var(--mid); color: #fff; } .rate .good { background: var(--good); color: #fff; }
@@ -94,7 +102,6 @@ ul.pts li { margin: 4px 0; }
 <main id="app"></main>
 <nav class="tabs"><div class="inner">
   <button data-tab="home"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>首頁</button>
-  <button data-tab="weeks"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>每週重點</button>
   <button data-tab="cards"><svg viewBox="0 0 24 24"><rect x="7" y="7" width="13" height="13" rx="2"/><path d="M4 16V6a2 2 0 0 1 2-2h10"/></svg>概念卡</button>
   <button data-tab="quiz"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/><path d="M8 15h8"/></svg>情境題</button>
 </div></nav>
@@ -159,16 +166,13 @@ const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { c
 
 // ---------- 資料與範圍 ----------
 let CONCEPTS = [], QUIZ = [], WEEKS = [];
-const MID_WEEK = 8; // 期中考範圍到決策效度（W8，11/6）；W9 試題分析是作業一，不在期中範圍
 const topicOf = x => x.topic || (CONCEPTS.find(c => c.id === x.concept) || {}).topic;
 let SCOPES = [];
 function buildScopes() {
   const topics = [...new Set(CONCEPTS.map(c => c.topic))];
   SCOPES = [
-    { key: 'all', label: '全部', group: 0, test: () => true },
-    { key: 'mid', label: '期中範圍（至決策效度）', group: 0, test: x => x.week <= MID_WEEK },
-    ...WEEKS.filter(w => w.concepts.length).map(w => ({ key: 'w' + w.week, label: 'W' + w.week, group: 0, test: x => x.week === w.week })),
-    ...topics.map(t => ({ key: 't:' + t, label: t, group: 1, test: x => topicOf(x) === t })),
+    { key: 'all', label: '全部', test: () => true },
+    ...topics.map(t => ({ key: 't:' + t, label: t, test: x => topicOf(x) === t })),
   ];
 }
 const inScope = list => list.filter((SCOPES.find(s => s.key === prefs.scope) || SCOPES[0]).test);
@@ -185,8 +189,8 @@ function go(t, arg) {
   window.scrollTo(0, 0);
 }
 document.querySelectorAll('nav.tabs button').forEach(b => b.onclick = () => go(b.dataset.tab));
-const scopeChips = () => `<div id="scopeChips">${['週次', '主題'].map((g, i) => `<div class="muted" style="margin:${i ? 14 : 0}px 0 6px;font-size:12px">${g}</div><div class="chips">${SCOPES.filter(s => s.group === i).map(s =>
-  `<button class="chip ${prefs.scope === s.key ? 'on' : ''}" data-k="${s.key}">${esc(s.label)}</button>`).join('')}</div>`).join('')}</div>`;
+const scopeChips = () => `<div id="scopeChips"><div class="chips">${SCOPES.map(s =>
+  `<button class="chip ${prefs.scope === s.key ? 'on' : ''}" data-k="${s.key}">${esc(s.label)}</button>`).join('')}</div></div>`;
 const bindScope = onChange => document.querySelectorAll('#scopeChips .chip').forEach(c => c.onclick = () => { prefs.scope = c.dataset.k; savePrefs(); onChange(); });
 
 // ---------- 首頁 ----------
@@ -208,17 +212,13 @@ function renderHome() {
       <div class="muted" style="margin:6px 0 18px">張卡等你複習（到期 ${due} · 新卡 ${fresh}）</div>
       <button class="btn" id="goCards">開始複習</button>
     </div>
-    <div class="row" style="margin-top:14px">
-      <button class="btn ghost" id="goQuiz">情境題 10 題</button>
-      <button class="btn ghost" id="goWeeks">每週重點</button>
-    </div>
+    <button class="btn ghost" id="goQuiz" style="margin-top:14px">情境題 10 題</button>
     ${weak ? `<button class="btn ghost" id="goWeak" style="margin-top:14px">錯題本（${weak}）</button>` : ''}
     <div style="margin-top:28px"><div class="muted" style="margin-bottom:8px">換範圍</div>${scopeChips()}</div>
     <div class="muted" style="text-align:center;margin-top:28px;font-size:12px">共 ${CONCEPTS.length} 張概念卡 · ${QUIZ.length} 題情境題<br>整理自課堂錄音摘要（未經人工核聽），已改寫成自己的話</div>`;
   bindScope(renderHome);
   $('#goCards').onclick = () => go('cards');
   $('#goQuiz').onclick = () => go('quiz');
-  $('#goWeeks').onclick = () => go('weeks');
   if (weak) $('#goWeak').onclick = () => go('weak');
 }
 
@@ -252,6 +252,16 @@ function startCards(weak) {
   }
   idx = 0; flipped = false; renderCard();
 }
+function barChart(bars) {
+  if (!bars) return '';
+  const max = Math.max(...bars);
+  return `<div class="bars">${bars.map((v, i) => `<div class="bar"><span>${v}%</span><i style="height:${v / max * 90}px${v === max ? ';background:var(--ink)' : ''}"></i><b>${i + 1}</b></div>`).join('')}</div><div class="muted" style="font-size:12px;margin-top:6px">理論人數比例（近似值），第 5 級最多、兩端最少</div>`;
+}
+function cmpTable(rows) {
+  if (!rows) return '';
+  const [head, ...body] = rows;
+  return `<table class="cmp"><thead><tr>${head.map(t => `<th>${esc(t)}</th>`).join('')}</tr></thead><tbody>${body.map(r => `<tr>${r.map((t, i) => i ? `<td>${esc(t)}</td>` : `<th>${esc(t)}</th>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
 function renderCard() {
   if (!deck.length) {
     app.innerHTML = `<div class="card" style="text-align:center">
@@ -269,10 +279,10 @@ function renderCard() {
     return;
   }
   const c = deck[idx];
-  const front = `<span class="tag">W${c.week} · ${esc(c.topic)}</span><div class="term">${esc(c.term)}</div>
+  const front = `<span class="tag">${esc(c.topic)}</span><div class="term">${esc(c.term)}</div>
     <div class="hint">先想想它的意思，點卡片翻面</div>`;
-  const back = `<span class="tag">W${c.week} · ${esc(c.topic)}</span><div class="term">${esc(c.term)}</div><div class="en">${esc(c.en)}</div>
-    <div class="def">${esc(c.def)}</div><div class="example"><b>舉個例子：</b>${esc(c.example)}</div>`;
+  const back = `<span class="tag">${esc(c.topic)}</span><div class="term">${esc(c.term)}</div><div class="en">${esc(c.en)}</div>
+    <div class="def">${esc(c.def)}</div><div class="example"><b>舉個例子：</b>${esc(c.example)}</div>${cmpTable(c.compare)}${barChart(c.bars)}`;
   app.innerHTML = `
     <div class="muted">${weakMode ? '錯題本' : '概念卡'} · ${idx + 1} / ${deck.length}</div>
     <div class="progress"><div style="width:${idx / deck.length * 100}%"></div></div>
@@ -322,7 +332,7 @@ function renderQuiz() {
   app.innerHTML = `
     <div class="muted">情境題 · ${qi + 1} / ${qz.length} · 答對 ${qScore}</div>
     <div class="progress"><div style="width:${qi / qz.length * 100}%"></div></div>
-    <div class="card"><span class="tag">W${q.week}</span><div class="prompt" style="margin-top:8px">${esc(q.q)}</div></div>
+    <div class="card"><span class="tag">${esc(topicOf(q))}</span><div class="prompt" style="margin-top:8px">${esc(q.q)}</div></div>
     ${item.order.map((o, i) => `<button class="opt ${answered ? (o.ok ? 'right' : (item.pick === i ? 'wrong' : '')) : ''}" data-o="${i}">${esc(o.text)}</button>`).join('')}
     ${answered ? `<div class="why">${esc(q.why)}${c ? `<br><span class="muted">相關概念：${esc(c.term)}</span>` : ''}</div>
       <div class="row" style="margin-top:10px"><button class="spk" id="say" style="flex:none" aria-label="朗讀">朗讀</button><button class="btn" id="next">下一題</button></div>` : ''}`;

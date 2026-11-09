@@ -21,8 +21,9 @@ for w in weeks:
     for cid in w['concepts']:
         if cid not in cids: errors.append(f"W{w['week']}：概念 {cid} 不存在")
 import os
-for k in cids | {q['id'] for q in quiz} | {f"W{w['week']}" for w in weeks if w['points']}:
-    if not os.path.exists(f'audio/{k}.mp3'): errors.append(f'缺音檔 audio/{k}.mp3（跑 tools/gen_audio.py）')
+# 音檔不是必要：缺的話 app 會退回裝置語音（2026-11-09 起不再為新內容產生音檔）
+no_audio = [k for k in cids | {q['id'] for q in quiz} | {f"W{w['week']}" for w in weeks if w['points']} if not os.path.exists(f'audio/{k}.mp3')]
 print(f'概念卡 {len(concepts)}、情境題 {len(quiz)}、週次 {len(weeks)}')
 print('\n'.join(errors) if errors else '✅ 全部通過')
+if no_audio: print(f'ℹ️ {len(no_audio)} 項沒有預錄音檔（會用裝置語音朗讀，不算錯誤）')
 sys.exit(1 if errors else 0)
